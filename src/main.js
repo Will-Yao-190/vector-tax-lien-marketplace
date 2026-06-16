@@ -142,6 +142,8 @@ const filters = {
   propertyType: ["All Types", "Single Family", "Condo", "Rowhome", "Commercial", "Land"],
 };
 
+const contactEmail = "vectormanager@vectorbrother.com";
+
 function money(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -466,6 +468,32 @@ function TrustBand() {
 function Contact() {
   const [submitted, setSubmitted] = useState(false);
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const contact = String(formData.get("contact") || "").trim();
+    const interest = String(formData.get("interest") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+    const subject = `Vector Tax Lien inquiry${name ? ` from ${name}` : ""}`;
+    const body = [
+      "New inquiry from vectortaxlien.com",
+      "",
+      `Name: ${name || "Not provided"}`,
+      `Email / Phone: ${contact || "Not provided"}`,
+      `Interest: ${interest || "Not provided"}`,
+      "",
+      "Message:",
+      message || "Not provided",
+      "",
+      "Please reply directly to the contact above.",
+    ].join("\n");
+
+    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSubmitted(true);
+  }
+
   return h(
     "section",
     { id: "contact", className: "section contact-section" },
@@ -480,10 +508,7 @@ function Contact() {
       "form",
       {
         className: "contact-form",
-        onSubmit: (event) => {
-          event.preventDefault();
-          setSubmitted(true);
-        },
+        onSubmit: handleSubmit,
       },
       h("label", null, "Name", h("input", { name: "name", placeholder: "Your name", required: true })),
       h("label", null, "Email / Phone", h("input", { name: "contact", placeholder: "Best contact", required: true })),
@@ -502,7 +527,7 @@ function Contact() {
       ),
       h("label", null, "Message", h("textarea", { name: "message", rows: 5, placeholder: "Asset ID, budget, preferred state, timeline, or questions" })),
       h("button", { className: "button button-primary", type: "submit" }, "Send Request", h(Icon, { icon: ArrowRight })),
-      submitted && h("p", { className: "form-status", role: "status" }, "Received. This prototype can later connect to email, CRM, or Azure Functions.")
+      submitted && h("p", { className: "form-status", role: "status" }, `Your email app should open a draft to ${contactEmail}. Please send it from there.`)
     )
   );
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/react@19.2.6";
 import { createRoot } from "https://esm.sh/react-dom@19.2.6/client";
-import * as L from "https://esm.sh/leaflet@1.9.4";
 import {
   ArrowRight,
   BadgeDollarSign,
@@ -293,80 +292,39 @@ function PropertyCard({ item, onSelect }) {
   );
 }
 
-function PropertyMap({ items, selectedId, onSelect }) {
-  const mapRef = useRef(null);
-  const layerRef = useRef(null);
-  const nodeRef = useRef(null);
-
-  useEffect(() => {
-    if (!nodeRef.current || mapRef.current) return;
-
-    mapRef.current = L.map(nodeRef.current, {
-      center: [39.0458, -76.6413],
-      zoom: 8,
-      scrollWheelZoom: false,
-    });
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
-    }).addTo(mapRef.current);
-
-    layerRef.current = L.layerGroup().addTo(mapRef.current);
-
-    return () => {
-      mapRef.current.remove();
-      mapRef.current = null;
-      layerRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!mapRef.current || !layerRef.current) return;
-
-    layerRef.current.clearLayers();
-    const bounds = [];
-
-    items.forEach((item) => {
-      if (!item.coordinates) return;
-      bounds.push(item.coordinates);
-      const isSelected = selectedId === item.id;
-      const marker = L.marker(item.coordinates, {
-        title: item.title,
-        riseOnHover: true,
-        opacity: isSelected ? 1 : 0.88,
-      });
-
-      marker
-        .bindPopup(`<strong>${item.id}</strong><br>${item.title}<br>${money(item.askingPrice)}`)
-        .on("click", () => onSelect(item))
-        .addTo(layerRef.current);
-
-      if (isSelected) {
-        marker.openPopup();
-      }
-    });
-
-    if (bounds.length === 1) {
-      mapRef.current.setView(bounds[0], 12);
-    } else if (bounds.length > 1) {
-      mapRef.current.fitBounds(bounds, { padding: [32, 32], maxZoom: 10 });
-    } else {
-      mapRef.current.setView([39.0458, -76.6413], 8);
-    }
-  }, [items, onSelect, selectedId]);
+function AssetLocationMap({ item }) {
+  const [lat, lon] = item.coordinates;
+  const range = 0.018;
+  const bbox = [lon - range, lat - range, lon + range, lat + range].join(",");
+  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
+    bbox
+  )}&layer=mapnik&marker=${encodeURIComponent(`${lat},${lon}`)}`;
+  const largerMapUrl = `https://www.openstreetmap.org/?mlat=${encodeURIComponent(lat)}&mlon=${encodeURIComponent(lon)}#map=15/${encodeURIComponent(
+    lat
+  )}/${encodeURIComponent(lon)}`;
 
   return h(
-    "aside",
-    { className: "map-panel", "aria-label": "Maryland property map" },
+    "section",
+    { className: "asset-location" },
     h(
       "div",
-      { className: "map-heading" },
-      h("div", null, h("p", { className: "eyebrow" }, "Map View"), h("h3", null, "Maryland inventory")),
-      h("span", null, `${items.length} assets`)
+      { className: "asset-location-heading" },
+      h("div", null, h("p", { className: "eyebrow" }, "Location"), h("h4", null, `${item.county}, ${item.state}`)),
+      h("span", null, "Approximate")
     ),
-    h("div", { className: "property-map", ref: nodeRef }),
-    h("p", { className: "map-note" }, "Map locations are approximate for preview. Confirm parcel-level location before publishing.")
+    h(
+      "div",
+      { className: "asset-detail-map" },
+      h("iframe", {
+        title: `${item.title} map`,
+        src: embedUrl,
+        loading: "lazy",
+        referrerPolicy: "no-referrer-when-downgrade",
+        allowFullScreen: true,
+      }),
+      h("a", { className: "larger-map-link", href: largerMapUrl, target: "_blank", rel: "noreferrer" }, "Open larger map")
+    ),
+    h("p", null, "Use the map to inspect the surrounding area. Confirm parcel boundaries and exact location before publishing.")
   );
 }
 
@@ -374,7 +332,6 @@ function Inventory() {
   const [query, setQuery] = useState("");
   const [criteria, setCriteria] = useState({ state: "All States", assetType: "All Assets", propertyType: "All Types" });
   const [selected, setSelected] = useState(null);
-  const [mapSelectedId, setMapSelectedId] = useState(null);
 
   const visibleProperties = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -410,29 +367,8 @@ function Inventory() {
     ),
     h(
       "div",
-      { className: "inventory-layout" },
-      h(
-        "div",
-        { className: "property-grid" },
-        visibleProperties.map((item) =>
-          h(PropertyCard, {
-            key: item.id,
-            item,
-            onSelect: (property) => {
-              setMapSelectedId(property.id);
-              setSelected(property);
-            },
-          })
-        )
-      ),
-      h(PropertyMap, {
-        items: visibleProperties,
-        selectedId: mapSelectedId,
-        onSelect: (property) => {
-          setMapSelectedId(property.id);
-          setSelected(property);
-        },
-      })
+      { className: "property-grid" },
+      visibleProperties.map((item) => h(PropertyCard, { key: item.id, item, onSelect: setSelected }))
     ),
     selected && h(AssetModal, { item: selected, onClose: () => setSelected(null) })
   );
@@ -470,6 +406,7 @@ function AssetModal({ item, onClose }) {
           { className: "check-list" },
           item.highlights.map((point) => h("li", { key: point }, h(Icon, { icon: Check, size: 16 }), point))
         ),
+        h(AssetLocationMap, { item }),
         h(
           "a",
           { className: "button button-primary full-button", href: "#contact", onClick: onClose },

@@ -143,6 +143,12 @@ button {
   background: var(--brand-dark);
 }
 
+.button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .button-secondary {
   border: 1px solid rgba(255, 255, 255, 0.34);
   background: rgba(255, 255, 255, 0.12);
@@ -616,6 +622,41 @@ button {
   color: rgba(255, 255, 255, 0.72);
 }
 
+.contact-direct {
+  display: grid;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.contact-direct a {
+  display: grid;
+  gap: 5px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.contact-direct a:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.contact-direct span {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.contact-direct strong {
+  color: #fff;
+  font-size: 1.08rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.contact-direct a:hover strong {
+  color: #ffd6d8;
+}
+
 .contact-form {
   display: grid;
   gap: 14px;
@@ -652,6 +693,14 @@ button {
   margin: 0;
   color: #ffd6d8;
   font-weight: 850;
+}
+
+.form-status-success {
+  color: #c9f3dc;
+}
+
+.form-status-error {
+  color: #ffd6d8;
 }
 
 .modal-backdrop {

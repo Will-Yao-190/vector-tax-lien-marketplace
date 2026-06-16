@@ -143,6 +143,9 @@ const filters = {
 };
 
 const contactEmail = "vectormanager@vectorbrother.com";
+const contactPhone = "240-869-9628";
+const formSubmitEndpoint = `https://formsubmit.co/ajax/${contactEmail}`;
+const googleSheetEndpoint = "";
 
 function money(value) {
   return new Intl.NumberFormat("en-US", {
@@ -466,32 +469,65 @@ function TrustBand() {
 }
 
 function Contact() {
-  const [submitted, setSubmitted] = useState(false);
+  const [formStatus, setFormStatus] = useState({ type: "idle", message: "" });
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
     const name = String(formData.get("name") || "").trim();
-    const contact = String(formData.get("contact") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
     const interest = String(formData.get("interest") || "").trim();
     const message = String(formData.get("message") || "").trim();
-    const subject = `Vector Tax Lien inquiry${name ? ` from ${name}` : ""}`;
-    const body = [
-      "New inquiry from vectortaxlien.com",
-      "",
-      `Name: ${name || "Not provided"}`,
-      `Email / Phone: ${contact || "Not provided"}`,
-      `Interest: ${interest || "Not provided"}`,
-      "",
-      "Message:",
-      message || "Not provided",
-      "",
-      "Please reply directly to the contact above.",
-    ].join("\n");
+    const payload = {
+      name,
+      email,
+      phone,
+      interest,
+      message,
+      source: "vectortaxlien.com",
+      _subject: `Vector Tax Lien inquiry${name ? ` from ${name}` : ""}`,
+      _template: "table",
+      _captcha: "false",
+    };
 
-    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSubmitted(true);
+    setFormStatus({ type: "loading", message: "Sending your request..." });
+
+    try {
+      const response = await fetch(formSubmitEndpoint, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Form submission failed");
+      }
+
+      if (googleSheetEndpoint) {
+        await fetch(googleSheetEndpoint, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      form.reset();
+      setFormStatus({
+        type: "success",
+        message: `Request sent. Vector will follow up using the contact information provided.`,
+      });
+    } catch (error) {
+      setFormStatus({
+        type: "error",
+        message: `We could not submit the form. Please email ${contactEmail} directly.`,
+      });
+    }
   }
 
   return h(
@@ -502,7 +538,23 @@ function Contact() {
       { className: "contact-copy" },
       h("p", { className: "eyebrow" }, "Investor Access"),
       h("h2", null, "Request asset details or submit an offer"),
-      h("p", null, "Send the asset ID, target budget, and whether you want to buy certificates, assignments, or a portfolio package.")
+      h("p", null, "Send the asset ID, target budget, and whether you want to buy certificates, assignments, or a portfolio package."),
+      h(
+        "div",
+        { className: "contact-direct" },
+        h(
+          "a",
+          { href: `tel:+1${contactPhone.replace(/\D/g, "")}` },
+          h("span", null, "Work Phone"),
+          h("strong", null, contactPhone)
+        ),
+        h(
+          "a",
+          { href: `mailto:${contactEmail}` },
+          h("span", null, "Email"),
+          h("strong", null, contactEmail)
+        )
+      )
     ),
     h(
       "form",
@@ -511,7 +563,8 @@ function Contact() {
         onSubmit: handleSubmit,
       },
       h("label", null, "Name", h("input", { name: "name", placeholder: "Your name", required: true })),
-      h("label", null, "Email / Phone", h("input", { name: "contact", placeholder: "Best contact", required: true })),
+      h("label", null, "Email", h("input", { name: "email", type: "email", placeholder: "you@example.com", required: true })),
+      h("label", null, "Phone", h("input", { name: "phone", type: "tel", placeholder: "(555) 123-4567" })),
       h(
         "label",
         null,
@@ -526,8 +579,18 @@ function Contact() {
         )
       ),
       h("label", null, "Message", h("textarea", { name: "message", rows: 5, placeholder: "Asset ID, budget, preferred state, timeline, or questions" })),
-      h("button", { className: "button button-primary", type: "submit" }, "Send Request", h(Icon, { icon: ArrowRight })),
-      submitted && h("p", { className: "form-status", role: "status" }, `Your email app should open a draft to ${contactEmail}. Please send it from there.`)
+      h(
+        "button",
+        { className: "button button-primary", type: "submit", disabled: formStatus.type === "loading" },
+        formStatus.type === "loading" ? "Sending..." : "Send Request",
+        h(Icon, { icon: ArrowRight })
+      ),
+      formStatus.message &&
+        h(
+          "p",
+          { className: `form-status form-status-${formStatus.type}`, role: "status" },
+          formStatus.message
+        )
     )
   );
 }

@@ -1,6 +1,6 @@
-# Vector Tax Sale Marketplace
+# Vector Tax Lien Marketplace
 
-A lightweight React prototype for listing Vector tax lien certificates, tax sale certificates, assignments, and property-backed tax sale opportunities.
+A lightweight React prototype for listing Vector tax lien certificates, assignments, and property-backed tax lien opportunities.
 
 The site is intentionally static for fast review and simple Azure deployment. React and icons load from CDN, so no npm install is required.
 

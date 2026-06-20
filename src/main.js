@@ -36,7 +36,7 @@ const properties = [
     interestRate: "6%",
     coordinates: [39.2946, -76.6406],
     image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
-    highlights: ["Baltimore City tax sale", "Residential block", "Assignment packet pending"],
+    highlights: ["Baltimore City tax lien", "Residential block", "Assignment packet pending"],
     risk: "Medium",
   },
   {
@@ -45,7 +45,7 @@ const properties = [
     address: "8801 Central Ave, Capitol Heights, MD",
     county: "Prince George's County",
     state: "MD",
-    assetType: "Tax Sale Certificate",
+    assetType: "Tax Lien Certificate",
     propertyType: "Single Family",
     status: "Reviewing Offers",
     lienAmount: 9200,
@@ -79,7 +79,7 @@ const properties = [
   },
   {
     id: "VTX-1057",
-    title: "Frederick County Tax Sale Position",
+    title: "Frederick County Tax Lien Position",
     address: "7420 Hayward Rd, Frederick, MD",
     county: "Frederick County",
     state: "MD",
@@ -102,7 +102,7 @@ const properties = [
     address: "6720 Ritchie Hwy, Glen Burnie, MD",
     county: "Anne Arundel County",
     state: "MD",
-    assetType: "Tax Sale Certificate",
+    assetType: "Tax Lien Certificate",
     propertyType: "Single Family",
     status: "Reserved",
     lienAmount: 14500,
@@ -138,7 +138,7 @@ const properties = [
 
 const filters = {
   state: ["All States", "MD"],
-  assetType: ["All Assets", "Tax Lien Certificate", "Tax Sale Certificate", "Tax Lien Assignment", "Lien Portfolio"],
+  assetType: ["All Assets", "Tax Lien Certificate", "Tax Lien Assignment", "Lien Portfolio"],
   propertyType: ["All Types", "Single Family", "Condo", "Rowhome", "Commercial", "Land"],
 };
 
@@ -162,7 +162,7 @@ function Icon({ icon, size = 18 }) {
 function Logo() {
   return h(
     "a",
-    { className: "logo", href: "#top", "aria-label": "Vector Tax Sale Marketplace home" },
+    { className: "logo", href: "#top", "aria-label": "Vector Tax Lien Marketplace home" },
     h("span", { className: "logo-v" }, "V"),
     h("span", { className: "logo-text" }, "ector")
   );
@@ -197,12 +197,12 @@ function Hero() {
     h(
       "div",
       { className: "hero-content" },
-      h("p", { className: "eyebrow" }, "Tax Sale Asset Marketplace"),
+      h("p", { className: "eyebrow" }, "Tax Lien Asset Marketplace"),
       h("h1", null, "Vector Tax Lien Opportunities"),
       h(
         "p",
         { className: "hero-copy" },
-        "Browse tax lien certificates, assignments, and property-backed tax sale positions prepared for investor review."
+        "Browse tax lien certificates, assignments, and property-backed lien positions prepared for investor review."
       ),
       h(
         "div",
@@ -360,7 +360,7 @@ function Inventory() {
     h(
       "div",
       { className: "section-heading split-heading" },
-      h("div", null, h("p", { className: "eyebrow" }, "Live Inventory"), h("h2", null, "Tax sale positions ready for investor review")),
+      h("div", null, h("p", { className: "eyebrow" }, "Live Inventory"), h("h2", null, "Tax lien positions ready for investor review")),
       h("p", null, "Each listing is a starting point for due diligence, assignment review, title questions, and transaction terms. Final documents should be confirmed before purchase.")
     ),
     h(FilterBar, { criteria, setCriteria, query, setQuery }),
@@ -437,7 +437,7 @@ function Process() {
       "div",
       { className: "process-intro" },
       h("p", { className: "eyebrow" }, "How It Works"),
-      h("h2", null, "A cleaner way to review tax sale inventory"),
+      h("h2", null, "A cleaner way to review tax lien inventory"),
       h("p", null, "The goal is not to make a legal promise online. The goal is to make the opportunity visible, organized, and easy for qualified buyers to evaluate.")
     ),
     h(
@@ -600,7 +600,7 @@ function Footer() {
     "footer",
     { className: "site-footer" },
     h(Logo),
-    h("p", null, "Tax sale assets involve legal and title risk. This site is for investor review and does not replace legal, tax, or title advice.")
+    h("p", null, "Tax lien assets involve legal and title risk. This site is for investor review and does not replace legal, tax, or title advice.")
   );
 }
 

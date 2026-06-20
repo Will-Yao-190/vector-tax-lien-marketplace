@@ -85,3 +85,21 @@ This works because the site is already static and does not need a build step.
 - Add downloadable due diligence packets
 - Add bilingual English/Chinese copy
 - Add Azure Functions for form handling
+
+## Screenshots
+
+### Home Page
+
+<img src="images/homepage.png" width="800">
+
+### Inventory Page
+
+<img src="images/inventorypage.png" width="800">
+
+### Inventory Detail Page
+
+<img src="images/inventorydetailpage.png" width="800">
+
+### Contact Page
+
+<img src="images/contactpage.png" width="800">

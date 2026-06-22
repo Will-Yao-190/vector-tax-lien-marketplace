@@ -546,6 +546,11 @@ button {
   color: #9b1217;
 }
 
+.risk-review {
+  background: #fff4dc;
+  color: #7d4f00;
+}
+
 .text-button {
   display: inline-flex;
   align-items: center;
@@ -747,6 +752,13 @@ button {
   cursor: pointer;
 }
 
+.modal-media {
+  display: grid;
+  grid-template-rows: minmax(360px, 1fr) auto;
+  min-height: 460px;
+  background: var(--soft);
+}
+
 .modal-photo {
   min-height: 460px;
   background: var(--soft);
@@ -757,6 +769,40 @@ button {
   width: 100%;
   height: 100%;
   min-height: 460px;
+  object-fit: cover;
+}
+
+.photo-thumbnails {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 86px;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+
+.photo-thumb {
+  display: block;
+  width: 86px;
+  height: 62px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: var(--soft);
+  cursor: pointer;
+}
+
+.photo-thumb.active {
+  border-color: var(--brand);
+}
+
+.photo-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -982,6 +1028,10 @@ button {
   }
 
   .modal-photo {
+    min-height: 280px;
+  }
+
+  .modal-media {
     min-height: 280px;
   }
 }

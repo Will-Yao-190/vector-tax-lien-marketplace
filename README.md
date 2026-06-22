@@ -16,8 +16,10 @@ The site is intentionally static for fast review and simple Azure deployment. Re
 ## Project Structure
 
 - `index.html`: HTML entry point and metadata
-- `src/main.js`: React application and sample asset data
+- `src/main.js`: React application
 - `src/styles.css`: responsive marketplace styling
+- `public/data/listings.json`: public listing data shown on the website
+- `public/images/properties/<parcel-number>/`: listing photos grouped by parcel number
 - `public/vector-real-estate-hero.jpg`: local hero image
 - `staticwebapp.config.json`: Azure Static Web Apps routing and headers
 - `server.js`: local static file server
@@ -42,7 +44,11 @@ If the Windows node alias fails, use the bundled Codex Node runtime:
 
 ## Edit Listings
 
-The current listings are sample data in `src/main.js` under the `properties` array. Replace the sample addresses, lien amounts, assessed values, redemption windows, and images with real diligence-approved data.
+The website reads its listings from `public/data/listings.json`. Update that file when a listing is added, changed, sold, or removed, then push the change to GitHub. Azure deploys it automatically.
+
+Keep the original underwriting workbook private. Do not commit it to this public repository because it may contain bid amounts, payment and repair costs, profit calculations, attorney details, title diligence notes, or other internal information.
+
+Only publish diligence-approved fields such as address, parcel number, county, property type, tax face amount, assessment, certificate timeline, photos, and a request-for-terms call to action.
 
 Suggested real fields to collect before publishing:
 
@@ -50,13 +56,11 @@ Suggested real fields to collect before publishing:
 - County and state
 - Certificate or lien type
 - Parcel number
-- Lien principal
-- Interest or penalty terms
-- Redemption deadline
-- Assignment price
+- Tax face amount
+- Lien expiration
 - Assessed value
-- Occupancy and exterior notes
-- Title or foreclosure status
+- Year built and building/land size
+- Public-facing exterior notes
 - Packet availability
 
 ## Deploy To Azure Static Web Apps

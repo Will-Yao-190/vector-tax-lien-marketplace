@@ -19,77 +19,7 @@ import {
 
 const h = React.createElement;
 
-const properties = [
-  {
-    id: "VTX-119674",
-    title: "944 W Main St Tax Lien Certificate",
-    address: "944 W Main St, Crisfield, MD 21817",
-    county: "Somerset County",
-    state: "MD",
-    assetType: "Tax Lien Certificate",
-    propertyType: "Commercial",
-    status: "Available for review",
-    lienAmount: 3731.1,
-    assessedValue: 194400,
-    lienExpiration: "May 2027",
-    purchasedAtTaxSale: "May 2025",
-    yearBuilt: "1900",
-    buildingSize: "4,550 sq ft",
-    landSize: "3,750 sq ft",
-    coordinates: [37.9787933, -75.8612786],
-    image: "/images/properties/119674/944-w-main-st-front-subject-property.png",
-    images: [
-      "/images/properties/119674/944-w-main-st-front-subject-property.png",
-      "/images/properties/119674/944-w-main-st-rear-subject-property.png",
-    ],
-    highlights: ["Commercial property", "Certificate purchased May 2025", "Reported lien expiration: May 2027"],
-  },
-  {
-    id: "VTX-010788",
-    title: "12715 Valley View Ave Tax Lien Certificate",
-    address: "12715 Valley View Ave, Cresaptown, MD 21502",
-    county: "Allegany County",
-    state: "MD",
-    assetType: "Tax Lien Certificate",
-    propertyType: "Residential",
-    status: "Available for review",
-    lienAmount: 2246.38,
-    assessedValue: 42500,
-    lienExpiration: "May 2027",
-    purchasedAtTaxSale: "May 2025",
-    yearBuilt: "1930",
-    buildingSize: "546 sq ft",
-    landSize: "7,000 sq ft",
-    coordinates: [39.5930994, -78.822741],
-    image: "/images/properties/010788/12715-valley-view-ave-subject-property.png",
-    images: ["/images/properties/010788/12715-valley-view-ave-subject-property.png"],
-    highlights: ["Residential property", "Certificate purchased May 2025", "Reported lien expiration: May 2027"],
-  },
-  {
-    id: "VTX-080304",
-    title: "28209 Whitehaven Ferry Rd Tax Lien Certificate",
-    address: "28209 Whitehaven Ferry Rd, Marion Station, MD 21853",
-    county: "Somerset County",
-    state: "MD",
-    propertyType: "Residential",
-    status: "Available for review",
-    lienAmount: 1701.38,
-    assessedValue: 50633,
-    lienExpiration: "May 2027",
-    purchasedAtTaxSale: "May 2025",
-    yearBuilt: "1968",
-    buildingSize: "1,776 sq ft",
-    landSize: "1 acre",
-    coordinates: [38.25853, -75.773413],
-    image: "/images/properties/80304/28209-whitehaven-ferry-rd-front.jpg",
-    images: [
-      "/images/properties/80304/28209-whitehaven-ferry-rd-front.jpg",
-      "/images/properties/80304/28209-whitehaven-ferry-rd-exterior-01.jpg",
-      "/images/properties/80304/28209-whitehaven-ferry-rd-exterior-02.jpg",
-    ],
-    highlights: ["Residential property", "Certificate purchased May 2025", "Reported lien expiration: May 2027"],
-  },
-];
+const listingDataUrl = "/public/data/listings.json";
 
 const filters = {
   state: ["All States", "MD"],
@@ -293,7 +223,7 @@ function AssetLocationMap({ item }) {
   );
 }
 
-function Inventory() {
+function Inventory({ properties, loading }) {
   const [query, setQuery] = useState("");
   const [criteria, setCriteria] = useState({ state: "All States", assetType: "All Assets", propertyType: "All Types" });
   const [selected, setSelected] = useState(null);
@@ -312,7 +242,7 @@ function Inventory() {
       const matchesType = criteria.propertyType === "All Types" || item.propertyType === criteria.propertyType;
       return matchesSearch && matchesState && matchesAsset && matchesType;
     });
-  }, [criteria, query]);
+  }, [criteria, properties, query]);
 
   return h(
     "section",
@@ -327,13 +257,14 @@ function Inventory() {
     h(
       "div",
       { className: "result-row" },
-      h("span", null, `${visibleProperties.length} matching assets`),
+      h("span", null, loading ? "Loading inventory..." : `${visibleProperties.length} matching assets`),
       h("span", null, "Maryland tax lien inventory")
     ),
     h(
       "div",
       { className: "property-grid" },
-      visibleProperties.map((item) => h(PropertyCard, { key: item.id, item, onSelect: setSelected }))
+      visibleProperties.map((item) => h(PropertyCard, { key: item.id, item, onSelect: setSelected })),
+      !loading && visibleProperties.length === 0 && h("p", { className: "empty-results" }, "No assets match the current filters.")
     ),
     selected && h(AssetModal, { item: selected, onClose: () => setSelected(null) })
   );
@@ -593,7 +524,47 @@ function Footer() {
 }
 
 function App() {
-  return h(React.Fragment, null, h(Header), h("main", null, h(Hero), h(TrustBand), h(Inventory), h(Process), h(Contact)), h(Footer));
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch(listingDataUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Could not load inventory data.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (active) {
+          setProperties(Array.isArray(data.listings) ? data.listings : []);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setProperties([]);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return h(
+    React.Fragment,
+    null,
+    h(Header),
+    h("main", null, h(Hero), h(TrustBand), h(Inventory, { properties, loading }), h(Process), h(Contact)),
+    h(Footer)
+  );
 }
 
 createRoot(document.getElementById("root")).render(h(App));

@@ -422,8 +422,15 @@ button {
 .property-photo {
   position: relative;
   min-height: 210px;
-  background-position: center;
-  background-size: cover;
+  overflow: hidden;
+  background: var(--soft);
+}
+
+.property-photo img {
+  display: block;
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
 }
 
 .property-photo span {
@@ -742,8 +749,15 @@ button {
 
 .modal-photo {
   min-height: 460px;
-  background-position: center;
-  background-size: cover;
+  background: var(--soft);
+}
+
+.modal-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  object-fit: cover;
 }
 
 .modal-content {

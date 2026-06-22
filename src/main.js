@@ -197,12 +197,12 @@ function Hero() {
     h(
       "div",
       { className: "hero-content" },
-      h("p", { className: "eyebrow" }, "Tax Lien Asset Marketplace"),
-      h("h1", null, "Vector Tax Lien Opportunities"),
+      h("p", { className: "eyebrow" }, "Maryland Tax Lien Certificate Marketplace"),
+      h("h1", null, "Maryland Tax Lien Certificates"),
       h(
         "p",
         { className: "hero-copy" },
-        "Browse tax lien certificates, assignments, and property-backed lien positions prepared for investor review."
+        "Browse Maryland tax lien certificates, lien assignments, and property-backed opportunities prepared for qualified investor review."
       ),
       h(
         "div",
@@ -272,7 +272,12 @@ function PropertyCard({ item, onSelect }) {
   return h(
     "button",
     { className: "property-card", type: "button", onClick: () => onSelect(item) },
-    h("div", { className: "property-photo", style: { backgroundImage: `url("${item.image}")` } }, h("span", null, item.status)),
+    h(
+      "div",
+      { className: "property-photo" },
+      h("img", { src: item.image, alt: `${item.title} in ${item.county}, Maryland` }),
+      h("span", null, item.status)
+    ),
     h(
       "div",
       { className: "property-body" },
@@ -360,15 +365,15 @@ function Inventory() {
     h(
       "div",
       { className: "section-heading split-heading" },
-      h("div", null, h("p", { className: "eyebrow" }, "Live Inventory"), h("h2", null, "Tax lien positions ready for investor review")),
-      h("p", null, "Each listing is a starting point for due diligence, assignment review, title questions, and transaction terms. Final documents should be confirmed before purchase.")
+      h("div", null, h("p", { className: "eyebrow" }, "Maryland Inventory"), h("h2", null, "Tax lien certificates ready for investor review")),
+      h("p", null, "Each Maryland tax lien listing is a starting point for due diligence, assignment review, title questions, and transaction terms. Final documents should be confirmed before purchase.")
     ),
     h(FilterBar, { criteria, setCriteria, query, setQuery }),
     h(
       "div",
       { className: "result-row" },
       h("span", null, `${visibleProperties.length} matching assets`),
-      h("span", null, "Maryland sample data for preview")
+      h("span", null, "Maryland tax lien inventory")
     ),
     h(
       "div",
@@ -391,7 +396,7 @@ function AssetModal({ item, onClose }) {
         { className: "modal-close", type: "button", title: "Close", onClick: onClose },
         h(Icon, { icon: X })
       ),
-      h("div", { className: "modal-photo", style: { backgroundImage: `url("${item.image}")` } }),
+      h("div", { className: "modal-photo" }, h("img", { src: item.image, alt: `${item.title} in ${item.county}, Maryland` })),
       h(
         "div",
         { className: "modal-content" },
@@ -437,7 +442,7 @@ function Process() {
       "div",
       { className: "process-intro" },
       h("p", { className: "eyebrow" }, "How It Works"),
-      h("h2", null, "A cleaner way to review tax lien inventory"),
+      h("h2", null, "A clearer way to review Maryland tax lien inventory"),
       h("p", null, "The goal is not to make a legal promise online. The goal is to make the opportunity visible, organized, and easy for qualified buyers to evaluate.")
     ),
     h(
